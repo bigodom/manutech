@@ -144,6 +144,28 @@ export default function MaintenanceTable({ requests, onUpdate }: MaintenanceTabl
     }
   };
 
+  // Função utilitária para traduzir prioridade
+  function traduzirPrioridade(priority: string) {
+    switch (priority) {
+      case 'HIGH':
+        return 'Alta';
+      case 'MEDIUM':
+        return 'Média';
+      case 'LOW':
+        return 'Baixa';
+      default:
+        return priority;
+    }
+  }
+
+  // Função utilitária para formatar data no padrão brasileiro
+  function formatarDataBR(dateString?: string | null) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+    return date.toLocaleDateString('pt-BR');
+  }
+
   return (
     <>
       <div className="overflow-auto w-full h-[80vh]">
@@ -153,6 +175,7 @@ export default function MaintenanceTable({ requests, onUpdate }: MaintenanceTabl
               <th className="px-3 py-2 text-left">Loja</th>
               <th className="px-3 py-2 text-left">Equipamento</th>
               <th className="px-3 py-2 text-left">Responsável</th>
+              <th className="px-3 py-2 text-left">Setor</th>
               <th className="px-3 py-2 text-left">Prioridade</th>
               <th className="px-3 py-2 text-left">Status</th>
             </tr>
@@ -174,7 +197,8 @@ export default function MaintenanceTable({ requests, onUpdate }: MaintenanceTabl
                   <td className="px-3 py-2">{request.location}</td>
                   <td className="px-3 py-2">{request.equipment}</td>
                   <td className="px-3 py-2">{request.responsible}</td>
-                  <td className="px-3 py-2 capitalize">{request.priority}</td>
+                  <td className="px-3 py-2">{request.sector}</td>
+                  <td className="px-3 py-2 capitalize">{traduzirPrioridade(request.priority)}</td>
                   <td className="px-3 py-2">
                     {!request.status && (
                       <button
@@ -259,6 +283,19 @@ export default function MaintenanceTable({ requests, onUpdate }: MaintenanceTabl
                   )}
                 </div>
                 <div>
+                  <strong>Setor:</strong>{' '}
+                  {isEditing ? (
+                    <input
+                      name="sector"
+                      value={editValues.sector}
+                      onChange={handleChange}
+                      className="border rounded px-2 py-1 w-full"
+                    />
+                  ) : (
+                    editValues.sector
+                  )}
+                </div>
+                <div>
                   <strong>Data do Pedido:</strong>{' '}
                   {isEditing ? (
                     <input
@@ -269,7 +306,7 @@ export default function MaintenanceTable({ requests, onUpdate }: MaintenanceTabl
                       className="border rounded px-2 py-1"
                     />
                   ) : (
-                    editValues.startDate
+                    formatarDataBR(editValues.startDate)
                   )}
                 </div>
                 <div>
@@ -281,12 +318,12 @@ export default function MaintenanceTable({ requests, onUpdate }: MaintenanceTabl
                       onChange={handleChange}
                       className="border rounded px-2 py-1"
                     >
-                      {priorityOptions.map(opt => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                      ))}
+                      <option value="HIGH">Alta</option>
+                      <option value="MEDIUM">Média</option>
+                      <option value="LOW">Baixa</option>
                     </select>
                   ) : (
-                    editValues.priority
+                    traduzirPrioridade(editValues.priority)
                   )}
                 </div>
                 <div>

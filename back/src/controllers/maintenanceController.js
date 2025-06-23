@@ -12,7 +12,8 @@ const createMaintenance = async (req, res) => {
             priority,
             startDate,
             status,
-            location
+            location,
+            sector
         } = req.body;
 
         const maintenance = await prisma.maintenance.create({
@@ -25,6 +26,7 @@ const createMaintenance = async (req, res) => {
             startDate: startDate ? new Date(startDate) : null,
             status: typeof status === 'boolean' ? status : false,
             location,
+            sector,
             },
         });
         res.status(201).json(maintenance);
@@ -79,7 +81,8 @@ const updateMaintenance = async (req, res) => {
             priority,
             startDate,
             status,
-            location
+            location,
+            sector
         } = req.body;
 
         const maintenance = await prisma.maintenance.update({
@@ -93,6 +96,7 @@ const updateMaintenance = async (req, res) => {
                 startDate: startDate ? new Date(startDate) : undefined,
                 status,
                 location,
+                sector,
                 completionDate: status === true ? new Date() : null
             },
         });

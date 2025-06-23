@@ -8,14 +8,16 @@ const storeOptions = [
   { value: 'all', label: 'Todas' },
   { value: '1', label: '1 - Matriz' },
   { value: '2', label: '2 - Hiper' },
+  { value: '3', label: '3 - HiperLanches' },
+  { value: '11', label: '11 - HiperLanches Filial' },
   { value: '12', label: '12 - Super' },
 ];
 
 const priorityOptions = [
   { value: 'all', label: 'Todas' },
-  { value: 'HIGH', label: 'HIGH' },
-  { value: 'MEDIUM', label: 'MEDIUM' },
-  { value: 'LOW', label: 'LOW' },
+  { value: 'HIGH', label: 'Alta' },
+  { value: 'MEDIUM', label: 'Média' },
+  { value: 'LOW', label: 'Baixa' },
 ];
 
 const statusOptions = [
@@ -81,7 +83,8 @@ export default function MaintenanceList() {
     const matchesSearch = !filters.search ||
       request.equipment.toLowerCase().includes(filters.search.toLowerCase()) ||
       (request.requestor || '').toLowerCase().includes(filters.search.toLowerCase()) || 
-      (request.responsible || '').toLowerCase().includes(filters.search.toLowerCase()); 
+      (request.responsible || '').toLowerCase().includes(filters.search.toLowerCase()) ||
+      (request.sector || '').toLowerCase().includes(filters.search.toLowerCase()); 
 
     return matchesStore && matchesPriority && matchesStatus && matchesSearch;
   });

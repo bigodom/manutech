@@ -12,6 +12,7 @@ export interface Maintenance {
   description: string;
   requestor: string;
   responsible: string;
+  sector?: string;
   priority: Priority;
   startDate: string | null;
   status: boolean;

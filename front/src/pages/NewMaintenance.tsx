@@ -9,6 +9,7 @@ export function NewMaintenance() {
     orderDate: today,
     requester: '',
     responsible: '',
+    sector: '',
     priority: 'LOW',
     problem: '',
     notes: '',
@@ -30,6 +31,7 @@ export function NewMaintenance() {
       description: form.problem, 
       requestor: form.requester, 
       responsible: form.responsible,
+      sector: form.sector,
       priority: form.priority.toUpperCase(),
       startDate: handleDateToISO(form.orderDate),
       status: false, 
@@ -58,6 +60,7 @@ export function NewMaintenance() {
         orderDate: today,
         requester: '',
         responsible: '',
+        sector: '',
         priority: 'LOW',
         problem: '',
         notes: '',
@@ -76,6 +79,7 @@ export function NewMaintenance() {
       orderDate: today,
       requester: '',
       responsible: '',
+      sector: '',
       priority: 'LOW',
       problem: '',
       notes: '',
@@ -99,6 +103,8 @@ export function NewMaintenance() {
               <option value="">Selecione</option>
               <option value="1">1 - Matriz</option>
               <option value="2">2 - Hiper</option>
+              <option value="3">3 - HiperLanches</option>
+              <option value="11">11 - HiperLanches Filial</option>
               <option value="12">12 - Super</option>
             </select>
           </div>
@@ -152,6 +158,18 @@ export function NewMaintenance() {
               placeholder="Nome do responsável (opcional)"
             />
           </div>
+          {/* Setor */}
+          <div>
+            <label className="block font-medium mb-1">Setor</label>
+            <input
+              type="text"
+              name="sector"
+              value={form.sector}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+              placeholder="Ex: TI, Manutenção, etc. (opcional)"
+            />
+          </div>
           {/* Prioridade */}
           <div>
             <label className="block font-medium mb-1">Prioridade*</label>
@@ -170,7 +188,7 @@ export function NewMaintenance() {
         </div>
         {/* Descrição do Problema */}
         <div>
-          <label className="block font-medium mb-1">Descrição do Problema*</label>
+          <label className="block font-medium mb-1">Descrição do Problema</label>
           <textarea
             name="problem"
             value={form.problem}
