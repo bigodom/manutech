@@ -15,17 +15,11 @@ model Maintenance {
   responsible String?
   priority    Priority  @default(LOW)
   startDate   DateTime?
-  status      Status    @default(PENDING)
+  status      Boolean   @default(false)
   location    String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-}
-
-enum Status {
-  PENDING
-  IN_PROGRESS
-  COMPLETED
-  CANCELED
+  completionDate DateTime?
 }
 
 enum Priority {

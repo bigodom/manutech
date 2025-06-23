@@ -17,14 +17,14 @@ const createMaintenance = async (req, res) => {
 
         const maintenance = await prisma.maintenance.create({
             data: {
-                equipment,
-                description,
-                requestor,
-                responsible,
-                priority: priority || 'LOW',
-                startDate: startDate ? new Date(startDate) : null,
-                status: status || 'PENDING',
-                location
+            equipment,
+            description,
+            requestor,
+            responsible,
+            priority: priority || 'LOW',
+            startDate: startDate ? new Date(startDate) : null,
+            status: typeof status === 'boolean' ? status : false,
+            location,
             },
         });
         res.status(201).json(maintenance);
@@ -35,8 +35,6 @@ const createMaintenance = async (req, res) => {
 }
 
 const getMaintenances = async (req, res) => {
-    /* #swagger.tags = ['Maintenance']
-       #swagger.description = 'Get all maintenance records'*/
     try {
         const maintenances = await prisma.maintenance.findMany({
             orderBy: {
@@ -94,7 +92,8 @@ const updateMaintenance = async (req, res) => {
                 priority,
                 startDate: startDate ? new Date(startDate) : undefined,
                 status,
-                location
+                location,
+                completionDate: status === true ? new Date() : null
             },
         });
         res.status(200).json(maintenance);

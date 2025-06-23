@@ -1,9 +1,9 @@
 // Imports
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type ControllerRenderProps, type FieldValues } from "react-hook-form";
+import { useForm, type ControllerRenderProps, type FieldValues, type Resolver } from "react-hook-form";
 import * as z from "zod";
 import { useState } from "react";
-import type { Maintenance, MaintenanceFormData, Priority, Status } from "@/types/Maintenance";
+import type { Maintenance, MaintenanceFormData, Priority } from "@/types/Maintenance";
 import * as api from "@/api/maintenanceApi";
 
 import { Button } from "@/components/ui/button";
@@ -59,7 +59,7 @@ export function MaintenanceDialog({ isOpen, onOpenChange, maintenance, onSuccess
     const isCreateMode = !maintenance;
 
     const form = useForm<MaintenanceFormData>({
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(formSchema) as unknown as Resolver<MaintenanceFormData, any, MaintenanceFormData>,
         defaultValues: {
             equipment: maintenance?.equipment || "",
             description: maintenance?.description || "",
@@ -68,7 +68,7 @@ export function MaintenanceDialog({ isOpen, onOpenChange, maintenance, onSuccess
             location: maintenance?.location || "",
             startDate: maintenance?.startDate ? maintenance.startDate.split('T')[0] : "",
             priority: maintenance?.priority || "LOW",
-            status: maintenance?.status || "PENDING",
+            status: maintenance && typeof maintenance.status === 'string' ? maintenance.status : "PENDING",
         },
     });
 
@@ -133,7 +133,7 @@ export function MaintenanceDialog({ isOpen, onOpenChange, maintenance, onSuccess
                     <FormLabel>{label} {required && <span className="text-red-500">*</span>}</FormLabel>
                     <FormControl>
                         {isEditMode ? (
-                            children(field) // A tipagem correta permite que 'children' seja chamado como função
+                            children({ ...field, value: String(field.value ?? '') })
                         ) : (
                             <p className="py-2 text-sm h-9 flex items-center">{field.value || "N/A"}</p>
                         )}
@@ -155,27 +155,23 @@ export function MaintenanceDialog({ isOpen, onOpenChange, maintenance, onSuccess
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormFieldComponent name="equipment" label="Equipamento/Área" required>
-                            {/* Altere esta linha */}
-                            {(field) => <Input {...field} value={field.value ?? ''} />}
+                            {(field) => <Input {...field} value={String(field.value ?? '')} />}
                         </FormFieldComponent>
                         <FormFieldComponent name="description" label="Descrição do Serviço" required>
-                            {/* Altere esta linha */}
-                            {(field) => <Input {...field} value={field.value ?? ''} />}
+                            {(field) => <Input {...field} value={String(field.value ?? '')} />}
                         </FormFieldComponent>
                         <div className="grid grid-cols-2 gap-4">
                             <FormFieldComponent name="requestor" label="Solicitante" required>
-                                {/* Altere esta linha */}
-                                {(field) => <Input {...field} value={field.value ?? ''} />}
+                                {(field) => <Input {...field} value={String(field.value ?? '')} />}
                             </FormFieldComponent>
                             <FormFieldComponent name="responsible" label="Responsável" required>
-                                {/* Altere esta linha */}
-                                {(field) => <Input {...field} value={field.value ?? ''} />}
+                                {(field) => <Input {...field} value={String(field.value ?? '')} />}
                             </FormFieldComponent>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <FormFieldComponent name="priority" label="Prioridade">
                                 {(field) => (
-                                    <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
+                                    <Select onValueChange={field.onChange} defaultValue={String(field.value) || undefined}>
                                         <SelectTrigger><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="LOW">Baixa</SelectItem>
@@ -187,7 +183,7 @@ export function MaintenanceDialog({ isOpen, onOpenChange, maintenance, onSuccess
                             </FormFieldComponent>
                             <FormFieldComponent name="status" label="Status">
                                 {(field) => (
-                                    <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
+                                    <Select onValueChange={field.onChange} defaultValue={String(field.value) || undefined}>
                                         <SelectTrigger><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="PENDING">Pendente</SelectItem>
@@ -201,10 +197,10 @@ export function MaintenanceDialog({ isOpen, onOpenChange, maintenance, onSuccess
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <FormFieldComponent name="startDate" label="Data de Início">
-                                {(field) => <Input type="date" {...field} value={field.value || ''} />}
+                                {(field) => <Input type="date" {...field} value={String(field.value) || ''} />}
                             </FormFieldComponent>
                             <FormFieldComponent name="location" label="Localização">
-                                {(field) => <Input {...field} value={field.value || ''} />}
+                                {(field) => <Input {...field} value={String(field.value) || ''} />}
                             </FormFieldComponent>
                         </div>
 
