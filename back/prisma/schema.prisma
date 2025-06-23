@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Maintenance {
+  id          Int       @id @default(autoincrement())
+  equipment   String
+  description String?
+  requestor   String
+  responsible String?
+  priority    Priority  @default(LOW)
+  startDate   DateTime?
+  status      Boolean   @default(false)
+  location    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completionDate DateTime?
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
