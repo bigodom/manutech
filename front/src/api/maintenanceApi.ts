@@ -1,6 +1,6 @@
 import type { Maintenance, MaintenanceFormData } from "@/types/Maintenance.ts";
 
-const API_URL = "http://192.168.11.95:3014/maintenance"; // Conforme o backend
+const API_URL = "http://192.168.11.143:3014/maintenance"; // Conforme o backend
 
 export const getMaintenances = async (): Promise<Maintenance[]> => {
   const response = await fetch(API_URL);

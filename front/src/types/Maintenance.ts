@@ -1,6 +1,11 @@
-export type Priority = "HIGH" | "MEDIUM" | "LOW";
-export type Status = "PENDING" | "IN_PROGRESS" | "COMPLETED" | "CANCELED";
+// src/types/maintenance.ts
 
+export type Priority = "HIGH" | "MEDIUM" | "LOW";
+
+/**
+ * Interface que define a estrutura de uma solicitação de manutenção.
+ * Esta é a versão consolidada, alinhada com o backend e o frontend.
+ */
 export interface Maintenance {
   id: number;
   equipment: string;
@@ -9,10 +14,21 @@ export interface Maintenance {
   responsible: string;
   priority: Priority;
   startDate: string | null;
-  status: Status;
+  status: boolean;
   location: string | null;
   createdAt: string;
+  updatedAt?: string; // Opcional, pode não estar presente em todas as respostas
+  completionDate?: string | null; // Opcional, pode ser null ou ausente
+  notes?: string; // Opcional, usado em MaintenanceTable
 }
 
-// Para o formulário de criação/edição
-export type MaintenanceFormData = Omit<Maintenance, "id" | "createdAt">;
+// Para o formulário de criação/edição, baseado na interface Maintenance
+export type MaintenanceFormData = Omit<Maintenance, "id" | "createdAt" | "updatedAt">;
+
+/**
+ * Interface que define as propriedades esperadas pelo componente MaintenanceTable.
+ */
+export interface MaintenanceTableProps {
+  requests: Maintenance[];
+  onUpdate: () => void;
+}
