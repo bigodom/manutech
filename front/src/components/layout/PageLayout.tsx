@@ -9,7 +9,7 @@ interface PageLayoutProps {
 
 export default function PageLayout({ title, subtitle, children, align = 'top' }: PageLayoutProps) {
   return (
-    <div className={`p-8 w-[80vw] ${align === 'center' ? 'flex flex-col items-center justify-center min-h-screen' : ''}`}>
+    <div className={`p-8 h-full w-full overflow-auto ${align === 'center' ? 'flex flex-col items-center justify-center min-h-screen' : ''}`}>
       <h2 className="text-2xl font-bold mb-2">{title}</h2>
       {subtitle && <span className="block mb-6">{subtitle}</span>}
       {children}

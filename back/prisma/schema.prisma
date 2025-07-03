@@ -14,6 +14,7 @@ model Maintenance {
   requestor   String
   responsible String?
   sector      String    @default("Geral")
+  department  String    @default("Geral")
   priority    Priority  @default(LOW)
   startDate   DateTime?
   status      Boolean   @default(false)

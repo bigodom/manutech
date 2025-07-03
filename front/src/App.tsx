@@ -70,7 +70,7 @@ export function Sidebar() {
 
 function AppLayout() {
   return (
-    <div className="flex h-screen w-screen overflow-hidden">
+    <div className="flex h-screen w-screen overflow-auto">
       <aside className="w-[255px] h-full bg-slate-800 text-white">
         <Sidebar />
       </aside>

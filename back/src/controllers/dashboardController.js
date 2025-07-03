@@ -57,7 +57,8 @@ export const getFlowData = async (req, res) => {
       days.push({
         date: d.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }),
         Criados: 0,
-        Concluídos: 0
+        Concluídos: 0,
+        Abertos: 0
       });
     }
 
@@ -76,6 +77,27 @@ export const getFlowData = async (req, res) => {
         }
       }
     });
+
+    // Calcular chamados abertos cumulativos para cada dia
+    let openCount = 0;
+    for (let i = 0; i < days.length; i++) {
+      // Buscar quantos chamados estavam abertos no final deste dia
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + i);
+      currentDate.setHours(23, 59, 59, 999); // Final do dia
+      
+      const openOnThisDay = await prisma.maintenance.count({
+        where: {
+          createdAt: { lte: currentDate },
+          OR: [
+            { status: false }, // Ainda aberto
+            { completionDate: { gt: currentDate } } // Concluído depois desta data
+          ]
+        }
+      });
+      
+      days[i].Abertos = openOnThisDay;
+    }
 
     res.status(200).json(days);
   } catch (error) {

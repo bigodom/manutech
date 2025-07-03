@@ -13,7 +13,8 @@ const createMaintenance = async (req, res) => {
             startDate,
             status,
             location,
-            sector
+            sector,
+            department 
         } = req.body;
 
         const maintenance = await prisma.maintenance.create({
@@ -27,6 +28,7 @@ const createMaintenance = async (req, res) => {
             status: typeof status === 'boolean' ? status : false,
             location,
             sector,
+            department // Added department field
             },
         });
         res.status(201).json(maintenance);
@@ -82,7 +84,8 @@ const updateMaintenance = async (req, res) => {
             startDate,
             status,
             location,
-            sector
+            sector,
+            department // Added department field
         } = req.body;
 
         const maintenance = await prisma.maintenance.update({
@@ -97,6 +100,7 @@ const updateMaintenance = async (req, res) => {
                 status,
                 location,
                 sector,
+                department, // Added department field
                 completionDate: status === true ? new Date() : null
             },
         });
