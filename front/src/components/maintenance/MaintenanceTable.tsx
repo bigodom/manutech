@@ -74,13 +74,15 @@ export default function MaintenanceTable({ requests, onUpdate }: MaintenanceTabl
     if (!editValues) return;
     const payload = {
       equipment: editValues.equipment,
-      description: editValues.description, // problem -> description
-      requestor: editValues.requestor, // requester -> requestor
+      description: editValues.description,
+      requestor: editValues.requestor,
       responsible: editValues.responsible,
       priority: editValues.priority,
-      startDate: convertDateToISO(editValues.startDate || ''),
+      startDate: editValues.startDate ? editValues.startDate.slice(0, 10) : '',
       status: statusToBoolean(editValues.status),
       location: editValues.location,
+      sector: editValues.sector,
+      department: editValues.department || '',
     };
     try {
       const response = await fetch(`http://192.168.11.143:3014/maintenance/${editValues.id}`, {
@@ -144,23 +146,47 @@ export default function MaintenanceTable({ requests, onUpdate }: MaintenanceTabl
     }
   };
 
+  // Função utilitária para traduzir prioridade
+  function traduzirPrioridade(priority: string) {
+    switch (priority) {
+      case 'HIGH':
+        return 'Alta';
+      case 'MEDIUM':
+        return 'Média';
+      case 'LOW':
+        return 'Baixa';
+      default:
+        return priority;
+    }
+  }
+
+  // Função utilitária para formatar data no padrão brasileiro
+  function formatarDataBR(dateString?: string | null) {
+    if (!dateString) return '';
+    // Extrai apenas a parte da data (YYYY-MM-DD)
+    const [ano, mes, dia] = dateString.slice(0, 10).split('-');
+    return `${dia}/${mes}/${ano}`;
+  }
+
   return (
     <>
       <div className="overflow-auto w-full h-[80vh]">
-        <table className="min-w-full w-full text-sm">
+        <table className="min-w-full w-full text-base">
           <thead>
             <tr className="bg-slate-100">
-              <th className="px-3 py-2 text-left">Loja</th>
-              <th className="px-3 py-2 text-left">Equipamento</th>
-              <th className="px-3 py-2 text-left">Responsável</th>
-              <th className="px-3 py-2 text-left">Prioridade</th>
-              <th className="px-3 py-2 text-left">Status</th>
+              <th className="px-6 py-4 text-left text-lg">Loja</th>
+              <th className="px-6 py-4 text-left text-lg">Equipamento</th>
+              <th className="px-6 py-4 text-left text-lg">Responsável</th>
+              <th className="px-6 py-4 text-left text-lg">Setor</th>
+              <th className="px-6 py-4 text-left text-lg">Departamento</th>
+              <th className="px-6 py-4 text-left text-lg">Prioridade</th>
+              <th className="px-6 py-4 text-left text-lg">Status</th>
             </tr>
           </thead>
           <tbody>
             {requests.length === 0 ? (
               <tr>
-                <td colSpan={5} className="text-center py-8 text-slate-500">
+                <td colSpan={7} className="text-center py-12 text-slate-500 text-lg">
                   Nenhuma manutenção encontrada
                 </td>
               </tr>
@@ -168,17 +194,19 @@ export default function MaintenanceTable({ requests, onUpdate }: MaintenanceTabl
               requests.map((request) => (
                 <tr
                   key={request.id}
-                  className="border-b cursor-pointer hover:bg-blue-50 transition"
+                  className="border-b cursor-pointer hover:bg-blue-50 transition h-16 text-base"
                   onClick={() => handleRowClick(request)}
                 >
-                  <td className="px-3 py-2">{request.location}</td>
-                  <td className="px-3 py-2">{request.equipment}</td>
-                  <td className="px-3 py-2">{request.responsible}</td>
-                  <td className="px-3 py-2 capitalize">{request.priority}</td>
-                  <td className="px-3 py-2">
+                  <td className="px-6 py-4">{request.location}</td>
+                  <td className="px-6 py-4">{request.equipment}</td>
+                  <td className="px-6 py-4">{request.responsible}</td>
+                  <td className="px-6 py-4">{request.sector || ''}</td>
+                  <td className="px-6 py-4">{request.department || ''}</td>
+                  <td className="px-6 py-4 capitalize">{traduzirPrioridade(request.priority)}</td>
+                  <td className="px-6 py-4">
                     {!request.status && (
                       <button
-                        className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
+                        className="bg-green-600 text-white px-3 py-2 rounded text-base hover:bg-green-700"
                         onClick={e => { e.stopPropagation(); handleConclude(request.id); }}
                       >
                         Concluir
@@ -259,6 +287,19 @@ export default function MaintenanceTable({ requests, onUpdate }: MaintenanceTabl
                   )}
                 </div>
                 <div>
+                  <strong>Setor:</strong>{' '}
+                  {isEditing ? (
+                    <input
+                      name="sector"
+                      value={editValues.sector || ''}
+                      onChange={handleChange}
+                      className="border rounded px-2 py-1 w-full"
+                    />
+                  ) : (
+                    editValues.sector
+                  )}
+                </div>
+                <div>
                   <strong>Data do Pedido:</strong>{' '}
                   {isEditing ? (
                     <input
@@ -269,7 +310,7 @@ export default function MaintenanceTable({ requests, onUpdate }: MaintenanceTabl
                       className="border rounded px-2 py-1"
                     />
                   ) : (
-                    editValues.startDate
+                    formatarDataBR(editValues.startDate)
                   )}
                 </div>
                 <div>
@@ -281,12 +322,12 @@ export default function MaintenanceTable({ requests, onUpdate }: MaintenanceTabl
                       onChange={handleChange}
                       className="border rounded px-2 py-1"
                     >
-                      {priorityOptions.map(opt => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                      ))}
+                      <option value="HIGH">Alta</option>
+                      <option value="MEDIUM">Média</option>
+                      <option value="LOW">Baixa</option>
                     </select>
                   ) : (
-                    editValues.priority
+                    traduzirPrioridade(editValues.priority)
                   )}
                 </div>
                 <div>
@@ -330,6 +371,21 @@ export default function MaintenanceTable({ requests, onUpdate }: MaintenanceTabl
                     />
                   ) : (
                     editValues.notes
+                  )}
+                </div>
+                <div>
+                  <strong>Departamento:</strong>{' '}
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="department"
+                      value={editValues.department || ''}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="Departamento"
+                    />
+                  ) : (
+                    editValues.department
                   )}
                 </div>
                 <div className="flex gap-2 mt-6">

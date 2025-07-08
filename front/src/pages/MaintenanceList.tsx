@@ -8,14 +8,16 @@ const storeOptions = [
   { value: 'all', label: 'Todas' },
   { value: '1', label: '1 - Matriz' },
   { value: '2', label: '2 - Hiper' },
+  { value: '3', label: '3 - HiperLanches' },
+  { value: '11', label: '11 - HiperLanches Filial' },
   { value: '12', label: '12 - Super' },
 ];
 
 const priorityOptions = [
   { value: 'all', label: 'Todas' },
-  { value: 'HIGH', label: 'HIGH' },
-  { value: 'MEDIUM', label: 'MEDIUM' },
-  { value: 'LOW', label: 'LOW' },
+  { value: 'HIGH', label: 'Alta' },
+  { value: 'MEDIUM', label: 'Média' },
+  { value: 'LOW', label: 'Baixa' },
 ];
 
 const statusOptions = [
@@ -81,16 +83,18 @@ export default function MaintenanceList() {
     const matchesSearch = !filters.search ||
       request.equipment.toLowerCase().includes(filters.search.toLowerCase()) ||
       (request.requestor || '').toLowerCase().includes(filters.search.toLowerCase()) || 
-      (request.responsible || '').toLowerCase().includes(filters.search.toLowerCase()); 
+      (request.responsible || '').toLowerCase().includes(filters.search.toLowerCase()) ||
+      (request.sector || '').toLowerCase().includes(filters.search.toLowerCase()) ||
+      (request.department || '').toLowerCase().includes(filters.search.toLowerCase());
 
     return matchesStore && matchesPriority && matchesStatus && matchesSearch;
   });
 
   return (
     <PageLayout title="Lista de Manutenções" subtitle="Gerencie todas as solicitações de manutenção">
-      <div className="bg-white p-6 rounded-lg shadow">
+      <div className="bg-white p-6 rounded-2xl shadow-md">
         {/* Filtros */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 p-4 bg-slate-50 rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 p-6 bg-slate-50 rounded-xl border border-slate-100">
           <div>
             <label className="text-xs font-medium text-slate-600 uppercase tracking-wide">Loja</label>
             <select
@@ -135,7 +139,7 @@ export default function MaintenanceList() {
         {/* Botão Nova Manutenção */}
         <div className="flex justify-end mb-4">
           <button
-            className="bg-blue-600 text-white font-semibold py-2 px-6 rounded hover:bg-blue-700 transition"
+            className="bg-blue-600 text-white font-semibold py-2 px-6 rounded-full shadow hover:bg-blue-700 transition"
             onClick={() => window.location.href = '/new-maintenance'}
           >
             Nova Manutenção
@@ -154,7 +158,9 @@ export default function MaintenanceList() {
           </div>
         )}
         {!loading && !error && (
-          <MaintenanceTable requests={filteredRequests} onUpdate={handleUpdate} />
+          <div className="overflow-auto rounded-2xl border border-slate-100 bg-white">
+            <MaintenanceTable requests={filteredRequests} onUpdate={handleUpdate} />
+          </div>
         )}
       </div>
     </PageLayout>
